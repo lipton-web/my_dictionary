@@ -9,6 +9,7 @@ import { collection, getDoc, getDocs, addDoc, doc, updateDoc, deleteDoc } from '
 
 import Dictionary from './Dictionary';
 import Addword from './Addword';
+import Detail from './Detail';
 import NotFound from './NotFound';
 import {loadDictionaryFB, addDictionaryFB} from "./redux/modules/dictionary"
 
@@ -54,6 +55,10 @@ function App() {
 
         <Route path='/addword' exact>
           <Addword />
+        </Route>
+
+        <Route path='/detail/:index' exact>
+          <Detail />
         </Route>
 
         <Route>

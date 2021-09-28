@@ -19,9 +19,9 @@ const Dictionary = (props) => {
 			<div>
 				{my_list.map((list, index) => {
 					return (
-						<ListStyle key={index}>
+						<ListStyle key={index} onClick={() => {history.push('/detail/'+index)}}>
 
-							<Container>
+							<Container >
 								<Subject>단어</Subject>
 								<H3>{list.word}</H3>
 							</Container>

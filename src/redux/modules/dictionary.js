@@ -4,12 +4,14 @@ import { collection, getDoc, getDocs, addDoc, doc, updateDoc, deleteDoc } from '
 // Action
 const LOAD = 'dictionary/LOAD';
 const CREATE = 'dictionary/CREATE';
+const UPDATE =  'dictionary/UPDATE';
+const DELETE = 'dictionary/DELETE';
 
 const initialState = {
 	list: [
-		{word: "ㅎ1ㅎ1", explain:"히히를 변형한 단어. 숫자 1을 'ㅣ'로 쓴다.", ex:"저 친구가 초콜릿을 줬어. ㅎ1ㅎ1."},
-		{word: "ㅎㅓㅎㅏ", explain:"히히를 변형한 단어. 숫자 1을 'ㅣ'로 쓴다.", ex:"저 친구가 초콜릿을 줬어. ㅎㅓㅎㅏ."},
-		{word: "ㅎㅗㅎㅗ", explain:"히히를 변형한 단어. 숫자 1을 'ㅣ'로 쓴다.", ex:"저 친구가 초콜릿을 줬어. ㅎㅗㅎㅗ."},
+		// {word: "ㅎ1ㅎ1", explain:"히히를 변형한 단어. 숫자 1을 'ㅣ'로 쓴다.", ex:"저 친구가 초콜릿을 줬어. ㅎ1ㅎ1."},
+		// {word: "ㅎㅓㅎㅏ", explain:"히히를 변형한 단어. 숫자 1을 'ㅣ'로 쓴다.", ex:"저 친구가 초콜릿을 줬어. ㅎㅓㅎㅏ."},
+		// {word: "ㅎㅗㅎㅗ", explain:"히히를 변형한 단어. 숫자 1을 'ㅣ'로 쓴다.", ex:"저 친구가 초콜릿을 줬어. ㅎㅗㅎㅗ."},
 	]
 }
 
@@ -25,11 +27,19 @@ export function createWord(word, explain, ex) {
 	return {type: CREATE, word, explain, ex};
 }
 
+//Update
+export function updateDictionary(word, explain, ex) {
+	return {type: UPDATE, word, explain, ex};
+}
 
+//Delete
+export function deleteDictionary(dictionary_index) {
+	return {type: DELETE, dictionary_index};
+}
 
 
 // **middlewares
-
+// load Dictionary middlewares
 export const loadDictionaryFB = () => {
 	return async function(dispatch) {
 		const dictionary_data = await getDocs(collection(db, 'myDictionary'));
@@ -48,7 +58,7 @@ export const loadDictionaryFB = () => {
 	}
 }
 
-
+//create Dictionary middlewares
 export const createDictionaryFB = (word, explain, ex) => {
 	return async function (dispatch) {
 		const docRef = await addDoc(collection(db, 'myDictionary'), word, explain, ex);
@@ -56,10 +66,50 @@ export const createDictionaryFB = (word, explain, ex) => {
 		const dictionary = {id: _dictionary.id, ..._dictionary.data()} //id값은 수정할때 필요함
 		// console.log((await getDoc(docRef)).data()); //생성한 데이터 firestore에서 가져와서 콘솔에 출력
 
-		console.log(dictionary);
+		console.log(dictionary, 'create');
 		dispatch(createWord(dictionary));
 	}
 }
+
+
+// update Dictionary middlewares
+export const updateDictionaryFB = (dictionary_id) => {
+	return async function (dispatch, getState) {
+		const docRef = doc(db, 'myDictionary', dictionary_id); //어느걸 수정할지 doc 잡아오기
+		await updateDoc(docRef, {word:'a2', explain:'a2' , ex:'a2' });
+		console.log(await getDoc(docRef).word, "word")
+
+		const _dictionary_list = getState().dictionary.list;
+		const dictionary_index = _dictionary_list.findIndex((b) => {
+			return b.id === dictionary_id;
+		})
+		dispatch(updateDictionary(dictionary_index));
+		// console.log(bucket_index);
+	}
+}
+
+
+// delete Dictionary middlewares
+export const deleteDictionaryFB = (dictionary_id) => {
+	return async function (dispatch, getState) {
+		if(!dictionary_id) {
+			window.alert('아이디가 없네요!')
+			return;
+		}
+		const docRef = doc(db, 'myDictionary', dictionary_id);
+		await deleteDoc(docRef);
+
+		// 리덕스에서 삭제
+		const _dictionary_list = getState().dictionary.list;
+		const dictionary_index = _dictionary_list.findIndex((b) => {
+			return b.id === dictionary_id;  //똑같은 인덱스 가져와
+		});
+
+		dispatch(deleteDictionary(dictionary_index));
+	}
+}
+
+
 
 //**Reducer
 export default function reducer(state = initialState, action = {}) {
@@ -75,6 +125,29 @@ export default function reducer(state = initialState, action = {}) {
 			console.log(new_dictionary_list)
 			return {...state, list: new_dictionary_list }
 		}
+
+		case UPDATE: {
+			// console.log('UPDATE')
+			const new_dictionary_list = state.list.map((list, idx) => {
+				if(parseInt(action.dictionary_index) === idx) {
+					return{...list, word: action.word, explain: action.explain, ex: action.ex};
+				} else {
+					return list;
+				}
+			})
+			console.log({list: new_dictionary_list}, 'UPDATE')
+			return {...state, list: new_dictionary_list};
+		}
+
+		case DELETE: {
+			console.log(state, action);
+			const new_dictionary_list = state.list.filter((l, idx) => {
+				// console.log(parseInt(action.bucket_index) !== idx, parseInt(action.bucket_index), idx);
+				return parseInt(action.bucket_index) !== idx;
+			});
+			console.log(new_dictionary_list, 'sdada');
+			return {...state, list: new_dictionary_list} 
+		} 
 
 		default: 
 			return state;

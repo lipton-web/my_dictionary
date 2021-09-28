@@ -38,14 +38,14 @@ const Addword = (props) => {
 			<ListStyle>
 				<Container>
 					<Subject>설명</Subject>
-					<Input ref={explain_ref} />
+					<Textarea ref={explain_ref} />
 				</Container>
 			</ListStyle>
 
 			<ListStyle>
 				<Container>
 					<Subject>예시</Subject>
-					<Input ref={ex_ref} />
+					<Textarea ref={ex_ref} />
 				</Container>
 			</ListStyle>
 
@@ -60,6 +60,11 @@ const Addword = (props) => {
 export default Addword;
 
 const Input = styled.input`
+	width: 100%;
+	height: 50px;
+`;
+
+const Textarea = styled.textarea`
 	width: 100%;
 	height: 50px;
 `;
