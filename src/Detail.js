@@ -66,8 +66,10 @@ const Detail = (props) => {
 				</Container>
 			</ListStyle>
 			
-			<button onClick={updateDictionary}>수정</button>
-			<button onClick={deleteDictionary}>삭제</button>
+			<ButtonWrap>
+				<Button style={{background: 'yellowgreen'}} onClick={updateDictionary}>수정</Button>
+				<Button style={{background: '#ff8787'}} onClick={deleteDictionary}>삭제</Button>
+			</ButtonWrap>
 
 		</div>
 	)
@@ -77,22 +79,27 @@ export default Detail;
 
 
 const Input = styled.input`
-width: 100%;
-height: 50px;
+	width: 100%;
+	height: 50px;
 `;
 
 const Textarea = styled.textarea`
-width: 100%;
-height: 50px;
+	width: 100%;
+	height: 50px;
+`;
+
+const ButtonWrap = styled.div`
+	display: flex;
+	justify-content: space-around;
 `;
 
 const Button = styled.button`
-margin-top: 50px;
-background: #5825f8;
-color: #fff;
-font-size: 20px;
-font-weight: 900;
-border-width: 0;
-width: 100%;
-height: 50px;
+	border-radius: 15px;
+	margin-top: 50px;
+	color: #fff;
+	font-size: 20px;
+	font-weight: 900;
+	border-width: 0;
+	width: 20%;
+	height: 50px;
 `;
