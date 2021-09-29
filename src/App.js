@@ -13,8 +13,6 @@ import Detail from './Detail';
 import NotFound from './NotFound';
 import {loadDictionaryFB, addDictionaryFB} from "./redux/modules/dictionary"
 
-import useInfiniteScroll from './useInfiniteScroll';
-import { useCallback } from "react";
 
 
 function App() {

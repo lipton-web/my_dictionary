@@ -16,11 +16,18 @@ const Addword = (props) => {
 	const explain_ref = React.useRef(null)
 	const ex_ref = React.useRef(null)
 
+	const alertText = () => {
+		const htmlCode = '정보를 입력해 주세요';
+		return <p dangerouslySetInnerHTML={{__html: htmlCode}}></p>
+	}
+
 	const addDictionary = () => {
 		// dispatch(createWord({word: word_ref.current.value, explain: explain_ref.current.value, ex: ex_ref.current.value}))
-		if (word_ref.current.value, explain_ref.current.value, ex_ref.current.value !== "") {
+		if (word_ref.current.value && explain_ref.current.value && ex_ref.current.value) {
 			dispatch(createDictionaryFB({word: word_ref.current.value, explain: explain_ref.current.value, ex: ex_ref.current.value}));
 			history.goBack()
+		} else {
+			alert('정보를 입력해 주세요')
 		}
 	}
 
@@ -49,6 +56,7 @@ const Addword = (props) => {
 				</Container>
 			</ListStyle>
 
+			{/* <div>{alertText}</div> */}
 			<Button onClick={addDictionary} >
 				추가하기
 			</Button>
