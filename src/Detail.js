@@ -16,31 +16,6 @@ const Detail = (props) => {
 
 	console.log(my_list, list_index, 'my_list')
 
-	// const [value, setValue] = useState('입력');
-
-	// const onChange = useCallback(e => {
-	// 	setValue(e.target.value);
-	// },[])
-
-	
-		// const [wordText, wordSetText] = useState(my_list[list_index].word);
-	
-		// const wordOnChange = (e) => {
-		// 	wordSetText(e.target.value);
-		// };
-	
-		// const [text, setText] = useState(my_list[list_index].explain);
-	
-		// const onChange = (e) => {
-		// 	setText(e.target.value);
-		// };
-	
-		// const [exText, exSetText] = useState(my_list[list_index].ex);
-	
-		// const exOnChange = (e) => {
-		// 	exSetText(e.target.value);
-		// };
-	
 
 		const word_ref = React.useRef(null)
 		const explain_ref = React.useRef(null)
@@ -48,12 +23,17 @@ const Detail = (props) => {
 
 
 		// 수정버튼 함수
-		// const updateDictionary = () => {
-		// 	dispatch(updateDictionaryFB(my_list[list_index].id, 
-		// 		// new_word = [word_ref, explain_ref, ex_ref]
-		// 		// my_list[list_index].word, my_list[list_index].ex));
-		// 	history.goBack()
-		// }
+		const updateDictionary = () => {
+			const updateData = {
+				word: word_ref.current.value, 
+				explain: explain_ref.current.value, 
+				ex: ex_ref.current.value
+			}
+			console.log(updateData);
+
+			dispatch(updateDictionaryFB(my_list[list_index].id, updateData));
+			history.goBack();
+		}
 
 		// 삭제버튼 함수
 		const deleteDictionary = () => {
@@ -64,34 +44,29 @@ const Detail = (props) => {
 	return (
 		<div>
 			<h1>{my_list[list_index] ? my_list[list_index].word : ''}</h1>
-			{/* <input type="text" value={wordText} onChange={wordSetText} />
-			<input type="text" value={text} onChange={onChange} />
-			<input type="text" value={exText} onChange={exOnChange} /> */}
+
 			<ListStyle>
 				<Container>
 					<Subject>단어</Subject>
-					<Input defaultValue={my_list[list_index] ? my_list[list_index].word:''} ref={word_ref} />
-					{/* <Input value={my_list[list_index].word} /> */}
+					<Input defaultValue={my_list[list_index] ? my_list[list_index].word : ''} ref={word_ref} />
 				</Container>
 			</ListStyle>
 			
 			<ListStyle>
 				<Container>
 					<Subject>설명</Subject>
-					<Textarea defaultValue={my_list[list_index] ? my_list[list_index].explain:''} ref={explain_ref} />
-					{/* <Input value={my_list[list_index].explain} /> */}
+					<Textarea defaultValue={my_list[list_index] ? my_list[list_index].explain : ''} ref={explain_ref} />
 				</Container>
 			</ListStyle>
 			
 			<ListStyle>
 				<Container>
 					<Subject>예시</Subject>
-					<Textarea defaultValue={my_list[list_index] ? my_list[list_index].ex:''}  ref={ex_ref} />
-					{/* <Input value={my_list[list_index].ex} /> */}
+					<Textarea defaultValue={my_list[list_index] ? my_list[list_index].ex : ''}  ref={ex_ref} />
 				</Container>
 			</ListStyle>
 			
-			<button onClick={() => {dispatch(updateDictionaryFB(my_list[list_index].id, my_list[list_index].word))}}>수정</button>
+			<button onClick={updateDictionary}>수정</button>
 			<button onClick={deleteDictionary}>삭제</button>
 
 		</div>

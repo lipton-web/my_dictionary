@@ -23,13 +23,13 @@ export function loadDictionary(dictionary) {
 }
 
 // Create
-export function createWord(word, explain, ex) {
-	return {type: CREATE, word, explain, ex};
+export function createWord(word) {
+	return {type: CREATE, word};
 }
 
 //Update
-export function updateDictionary(word, explain, ex) {
-	return {type: UPDATE, word, explain, ex};
+export function updateDictionary(updateData) {
+	return {type: UPDATE, updateData};
 }
 
 //Delete
@@ -52,16 +52,17 @@ export const loadDictionaryFB = () => {
 			dictionary_list.push({id: doc.id, ...doc.data()});
 		});
 
-		console.log(dictionary_list, 'aa');
+		console.log(dictionary_list, 'loadDictionaryFB');
 		dispatch(loadDictionary(dictionary_list));
 
 	}
 }
 
+
 //create Dictionary middlewares
-export const createDictionaryFB = (word, explain, ex) => {
+export const createDictionaryFB = (word) => {
 	return async function (dispatch) {
-		const docRef = await addDoc(collection(db, 'myDictionary'), word, explain, ex);
+		const docRef = await addDoc(collection(db, 'myDictionary'), word);
 		const _dictionary = await getDoc(docRef); // 생성하기 눌렀을 때 생성한 정보 자료들 (word, explain, ex 등..) 다 가져오기
 		const dictionary = {id: _dictionary.id, ..._dictionary.data()} //id값은 수정할때 필요함
 		// console.log((await getDoc(docRef)).data()); //생성한 데이터 firestore에서 가져와서 콘솔에 출력
@@ -73,17 +74,18 @@ export const createDictionaryFB = (word, explain, ex) => {
 
 
 // update Dictionary middlewares
-export const updateDictionaryFB = (dictionary_id) => {
+export const updateDictionaryFB = (dictionary_id, updateData) => {
 	return async function (dispatch, getState) {
 		const docRef = doc(db, 'myDictionary', dictionary_id); //어느걸 수정할지 doc 잡아오기
-		await updateDoc(docRef, {word:'a2', explain:'a2' , ex:'a2' });
-		console.log(await getDoc(docRef).word, "word")
+		
+		await updateDoc(docRef, { ...updateData });
 
 		const _dictionary_list = getState().dictionary.list;
 		const dictionary_index = _dictionary_list.findIndex((b) => {
 			return b.id === dictionary_id;
 		})
-		dispatch(updateDictionary(dictionary_index));
+		const data = { index : dictionary_index, updateData: updateData}
+		dispatch(updateDictionary(data));
 		// console.log(bucket_index);
 	}
 }
@@ -121,7 +123,7 @@ export default function reducer(state = initialState, action = {}) {
 
 		case CREATE: {
 			console.log('CREATE')
-			const new_dictionary_list = [...state.list, action.word] //왜 action.word 만 작동하나?  action.explain, action.ex는 작동 안함. 3개 다 쓰면 undifined
+			const new_dictionary_list = [...state.list, action.word]
 			console.log(new_dictionary_list)
 			return {...state, list: new_dictionary_list }
 		}
@@ -129,13 +131,14 @@ export default function reducer(state = initialState, action = {}) {
 		case UPDATE: {
 			// console.log('UPDATE')
 			const new_dictionary_list = state.list.map((list, idx) => {
-				if(parseInt(action.dictionary_index) === idx) {
-					return{...list, word: action.word, explain: action.explain, ex: action.ex};
+				if(parseInt(action.updateData.index) === idx) {
+					return{...list, ...action.updateData.updateData};
 				} else {
 					return list;
 				}
 			})
-			console.log({list: new_dictionary_list}, 'UPDATE')
+			console.log({...action.updateData.updateData}, '...action')
+			console.log(new_dictionary_list, 'UPDATE')
 			return {...state, list: new_dictionary_list};
 		}
 
@@ -143,7 +146,7 @@ export default function reducer(state = initialState, action = {}) {
 			console.log(state, action);
 			const new_dictionary_list = state.list.filter((l, idx) => {
 				// console.log(parseInt(action.bucket_index) !== idx, parseInt(action.bucket_index), idx);
-				return parseInt(action.bucket_index) !== idx;
+				return parseInt(action.dictionary_index) !== idx;
 			});
 			console.log(new_dictionary_list, 'sdada');
 			return {...state, list: new_dictionary_list} 

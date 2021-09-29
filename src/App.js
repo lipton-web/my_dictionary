@@ -2,7 +2,7 @@ import './App.css';
 import React from 'react';
 
 import {Route, Switch} from 'react-router-dom';
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import {db} from './firebase';
 import { collection, getDoc, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
@@ -12,6 +12,9 @@ import Addword from './Addword';
 import Detail from './Detail';
 import NotFound from './NotFound';
 import {loadDictionaryFB, addDictionaryFB} from "./redux/modules/dictionary"
+
+import useInfiniteScroll from './useInfiniteScroll';
+import { useCallback } from "react";
 
 
 function App() {
@@ -43,6 +46,7 @@ function App() {
   React.useEffect(() => {
     dispatch(loadDictionaryFB());
   }, []);
+
 
 
   return (
